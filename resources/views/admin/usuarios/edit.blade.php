@@ -1,40 +1,27 @@
 @extends('layouts.app')
 
-@section('title', 'Editar Usuário')
+@section('title', 'Editar Membro')
 
 @section('content')
-<div class="max-w-4xl mx-auto px-4">
+<div class="max-w-3xl mx-auto px-6 pt-12 pb-24">
     <!-- Header -->
-    <div class="mb-8">
-        <div class="flex items-center mb-4">
-            <a href="{{ route('admin.usuarios.index') }}" class="text-gray-600 hover:text-gray-900 mr-4">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                </svg>
-            </a>
-            <div>
-                <h1 class="text-4xl font-bold text-gray-900">Editar Usuário</h1>
-                <p class="text-gray-600 mt-1">{{ $usuario->name }}</p>
-            </div>
-        </div>
+    <div class="mb-12">
+        <a href="{{ route('admin.usuarios.index') }}" class="inline-flex items-center text-sm font-semibold text-gray-400 hover:text-gray-900 transition-colors mb-4">
+            &larr; Voltar para Usuários
+        </a>
+        <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 mb-2">Editar Membro</h1>
+        <p class="text-lg text-gray-500">Atualizando o registro de: {{ $usuario->name }}</p>
     </div>
 
     <!-- Erros -->
     @if($errors->any())
-        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-6">
-            <div class="flex items-start">
-                <svg class="w-6 h-6 text-red-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                </svg>
-                <div class="flex-1">
-                    <p class="text-red-800 font-medium mb-2">Erro ao atualizar usuário:</p>
-                    <ul class="list-disc list-inside text-red-700 text-sm">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            </div>
+        <div class="mb-8 bg-red-50 text-red-800 p-4 rounded-lg text-sm font-medium border border-red-100">
+            <p class="mb-2">Não foi possível atualizar o registro:</p>
+            <ul class="list-disc list-inside">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
         </div>
     @endif
 
@@ -43,13 +30,13 @@
         @csrf
         @method('PUT')
 
-        <div class="bg-white rounded-xl shadow-md p-8 space-y-6">
+        <div class="space-y-8">
             
             <!-- Foto do Usuário -->
             <div>
-                <label class="block text-gray-900 font-bold mb-3">Foto do Usuário</label>
+                <label class="block text-sm font-semibold text-gray-700 mb-4">Foto de Perfil</label>
                 <div class="flex items-center gap-6">
-                    <div class="w-32 h-32 bg-gradient-to-br from-slate-500 to-slate-700 rounded-full overflow-hidden flex-shrink-0">
+                    <div class="w-20 h-20 bg-gray-100 rounded-full overflow-hidden flex-shrink-0 border border-gray-200">
                         @if($usuario->photo)
                             <img id="preview" src="{{ asset('storage/' . $usuario->photo) }}" 
                                  alt="{{ $usuario->name }}" 
@@ -58,108 +45,97 @@
                         @else
                             <img id="preview" src="" alt="Preview" class="w-full h-full object-cover hidden">
                             <div id="preview-default" class="w-full h-full flex items-center justify-center">
-                                <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                </svg>
+                                <span class="text-gray-400 font-bold text-sm">FOTO</span>
                             </div>
                         @endif
                     </div>
                     <div class="flex-1">
                         <input type="file" name="photo" id="photo" accept="image/*"
-                               class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition"
+                               class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all"
                                onchange="previewImage(event)">
-                        <p class="text-sm text-gray-500 mt-2">JPG, PNG ou WEBP. Máximo 2MB. Deixe em branco para manter a imagem atual.</p>
+                        <p class="text-xs text-gray-500 mt-2">Formatos recomendados: JPG, PNG, WEBP (Max 2MB). Deixe em branco para manter a imagem atual.</p>
                     </div>
                 </div>
             </div>
 
-            <div class="border-t border-gray-200 pt-6"></div>
+            <div class="border-t border-gray-100"></div>
 
-            <!-- Nome -->
-            <div>
-                <label class="block text-gray-900 font-bold mb-2">Nome Completo *</label>
-                <input type="text" name="name" value="{{ old('name', $usuario->name) }}" 
-                       class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition" 
-                       required>
-            </div>
-
-            <!-- Email -->
-            <div>
-                <label class="block text-gray-900 font-bold mb-2">Email *</label>
-                <input type="email" name="email" value="{{ old('email', $usuario->email) }}" 
-                       class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition" 
-                       required>
-            </div>
-
-            <!-- Senha -->
-            <div>
-                <label class="block text-gray-900 font-bold mb-2">Nova Senha</label>
-                <input type="password" name="password" 
-                       placeholder="Deixe em branco para não alterar"
-                       class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition">
-                <p class="text-sm text-gray-500 mt-1">Mínimo 6 caracteres. Deixe em branco para manter a senha atual.</p>
-            </div>
-
-            <!-- Tipo de Conta e RM -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-6">
+                <!-- Nome -->
                 <div>
-                    <label class="block text-gray-900 font-bold mb-2">Tipo de Conta *</label>
-                    <select name="role" id="role" 
-                            class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition" 
-                            required onchange="toggleAnoEscolar()">
-                        <option value="">Selecione...</option>
-                        <option value="aluno" {{ old('role', $usuario->role) == 'aluno' ? 'selected' : '' }}>Aluno</option>
-                        <option value="admin" {{ old('role', $usuario->role) == 'admin' ? 'selected' : '' }}>Administrador</option>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Nome Completo *</label>
+                    <input type="text" name="name" value="{{ old('name', $usuario->name) }}" 
+                           class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all" 
+                           required>
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Correio Eletrônico *</label>
+                    <input type="email" name="email" value="{{ old('email', $usuario->email) }}" 
+                           class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all" 
+                           required>
+                </div>
+
+                <!-- Senha -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Nova Senha de Acesso</label>
+                    <input type="password" name="password" 
+                           placeholder="Deixe em branco para não alterar"
+                           class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all">
+                    <p class="text-xs text-gray-500 mt-2">Utilize no mínimo 6 caracteres. Se deixar em branco, a senha atual permanecerá.</p>
+                </div>
+
+                <!-- Tipo de Conta e RM -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Tipo de Cadastro *</label>
+                        <select name="role" id="role" 
+                                class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all" 
+                                required onchange="toggleAnoEscolar()">
+                            <option value="">Selecione a categoria...</option>
+                            <option value="aluno" {{ old('role', $usuario->role) == 'aluno' ? 'selected' : '' }}>Aluno</option>
+                            <option value="admin" {{ old('role', $usuario->role) == 'admin' ? 'selected' : '' }}>Administrador</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Registro de Matrícula (RM)</label>
+                        <input type="text" name="rm" value="{{ old('rm', $usuario->rm) }}" 
+                               class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all">
+                        <p class="text-xs text-gray-500 mt-2">Apenas para cadastro de alunos (Opcional).</p>
+                    </div>
+                </div>
+
+                <!-- Ano Escolar (só aparece se for aluno) -->
+                <div id="ano-escolar-field" style="display: {{ old('role', $usuario->role) == 'aluno' ? 'block' : 'none' }};">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Grau de Escolaridade</label>
+                    <select name="ano_escolar" 
+                            class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-all">
+                        <option value="">Selecione o ano letivo...</option>
+                        <option value="1" {{ old('ano_escolar', $usuario->ano_escolar) == '1' ? 'selected' : '' }}>1º Ano do Ensino Médio</option>
+                        <option value="2" {{ old('ano_escolar', $usuario->ano_escolar) == '2' ? 'selected' : '' }}>2º Ano do Ensino Médio</option>
+                        <option value="3" {{ old('ano_escolar', $usuario->ano_escolar) == '3' ? 'selected' : '' }}>3º Ano do Ensino Médio</option>
                     </select>
                 </div>
-
-                <div>
-                    <label class="block text-gray-900 font-bold mb-2">RM (Registro)</label>
-                    <input type="text" name="rm" value="{{ old('rm', $usuario->rm) }}" 
-                           class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition">
-                    <p class="text-sm text-gray-500 mt-1">Opcional</p>
-                </div>
-            </div>
-
-            <!-- Ano Escolar (só aparece se for aluno) -->
-            <div id="ano-escolar-field" style="display: {{ old('role', $usuario->role) == 'aluno' ? 'block' : 'none' }};">
-                <label class="block text-gray-900 font-bold mb-2">Ano Escolar</label>
-                <select name="ano_escolar" 
-                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition">
-                    <option value="">Selecione...</option>
-                    <option value="1" {{ old('ano_escolar', $usuario->ano_escolar) == '1' ? 'selected' : '' }}>1º ano</option>
-                    <option value="2" {{ old('ano_escolar', $usuario->ano_escolar) == '2' ? 'selected' : '' }}>2º ano</option>
-                    <option value="3" {{ old('ano_escolar', $usuario->ano_escolar) == '3' ? 'selected' : '' }}>3º ano</option>
-                </select>
             </div>
 
             <!-- Info sobre empréstimos -->
-            @if($usuario->loans()->where('status', 'ativo')->count() > 0)
-            <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-lg">
-                <div class="flex items-start">
-                    <svg class="w-6 h-6 text-yellow-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                    </svg>
-                    <div>
-                        <p class="text-yellow-800 font-medium">Este usuário possui {{ $usuario->loans()->where('status', 'ativo')->count() }} empréstimo(s) ativo(s).</p>
-                    </div>
-                </div>
+            @php $activeLoans = $usuario->loans()->where('status', 'ativo')->count(); @endphp
+            @if($activeLoans > 0)
+            <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-lg text-sm text-yellow-800">
+                <p class="font-semibold mb-1">Aviso de Bloqueio de Ações Estruturais</p>
+                <p>Este membro possui <strong>{{ $activeLoans }} empréstimo(s) em aberto</strong>. Isso pode prevenir a exclusão da conta até a devolução dos volumes.</p>
             </div>
             @endif
 
             <!-- Botões -->
-            <div class="flex gap-4 pt-6 border-t border-gray-200">
-                <button type="submit" class="bg-slate-700 hover:bg-slate-800 text-white font-bold px-8 py-3 rounded-lg transition shadow-lg hover:shadow-xl flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
+            <div class="pt-8 border-t border-gray-100 flex gap-4">
+                <button type="submit" class="px-6 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition-colors">
                     Salvar Alterações
                 </button>
-                <a href="{{ route('admin.usuarios.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white font-bold px-8 py-3 rounded-lg transition shadow-lg hover:shadow-xl flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                    Cancelar
+                <a href="{{ route('admin.usuarios.index') }}" class="px-6 py-2.5 bg-white text-gray-700 text-sm font-semibold border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    Descartar Alterações
                 </a>
             </div>
         </div>

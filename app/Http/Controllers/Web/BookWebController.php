@@ -23,9 +23,15 @@ class BookWebController extends Controller
             $query->where('available_quantity', '>', 0);
         }
         
-        // Busca por título
+        // Busca por título e autor
         if ($request->filled('search')) {
-            $query->where('title', 'like', '%' . $request->search . '%');
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                  ->orWhereHas('authors', function ($q) use ($search) {
+                      $q->where('name', 'like', '%' . $search . '%');
+                  });
+            });
         }
         
         $livros = $query->paginate(12);

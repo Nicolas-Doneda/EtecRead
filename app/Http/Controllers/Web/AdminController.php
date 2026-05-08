@@ -501,6 +501,16 @@ class AdminController extends Controller
         // Diminui estoque
         $book->decrement('available_quantity');
 
+        // Se houver uma reserva ativa (pendente ou confirmada) para esse usuário e livro, finaliza a reserva
+        $reserva = Reservation::where('user_id', $validated['user_id'])
+            ->where('book_id', $validated['book_id'])
+            ->whereIn('status', ['pendente', 'confirmado'])
+            ->first();
+
+        if ($reserva) {
+            $reserva->update(['status' => 'finalizado']);
+        }
+
         return redirect()->route('admin.emprestimos.index')->with('success', 'Empréstimo criado com sucesso!');
     }
 
@@ -526,7 +536,7 @@ class AdminController extends Controller
             ->first();
 
         if ($proximaReserva) {
-            $proximaReserva->update(['status', 'confirmado']);
+            $proximaReserva->update(['status' => 'confirmado']);
 
             try {
                 $proximaReserva->user->notify(new ReservationConfirmedNotification($proximaReserva));
